@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toptips-boot
+spec:
+  selector:
+    matchLabels:
+      app: toptips-boot
+  template:
+    metadata:
+      labels:
+        app: toptips-boot
+    spec:
+      containers:
+      - name: toptips-boot
+        image: registry.local:5000/demo/toptips-boot
+        livenessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health/liveness
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health/readiness
+        resources:
+          requests:
+            memory: "756Mi"
+            cpu: "500m"
+          limits:
+            memory: "756Mi"
+        volumeMounts:
+          - mountPath: /workspace/config
+            name: spring-application-config-volume
+        env:
+          - name: TOPTIPS_SECURITY_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: user-creds
+          - name: TOPTIPS_SECURITY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: user-creds
+        ports:
+        - containerPort: 8080
+      volumes:
+        - name: spring-application-config-volume
+          configMap:
+            name: spring-application-config

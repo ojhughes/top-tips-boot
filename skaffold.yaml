@@ -1,0 +1,13 @@
+apiVersion: skaffold/v2beta10
+kind: Config
+metadata:
+  name: top-tips-boot
+build:
+  artifacts:
+  - image: registry.local:5000/demo/toptips-boot
+    buildpacks:
+      builder: gcr.io/paketo-buildpacks/builder:base
+deploy:
+  kustomize:
+    paths:
+    - k8s
